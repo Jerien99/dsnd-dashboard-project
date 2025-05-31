@@ -1,37 +1,45 @@
 # Import the QueryBase class
-# YOUR CODE HERE
+from .query_base import QueryBase
 
 # Import dependencies for sql execution
-#### YOUR CODE HERE
+from .sql_execution import QueryMixin
 
 # Create a subclass of QueryBase
 # called  `Team`
-#### YOUR CODE HERE
+class Team(QueryMixin, QueryBase):
 
     # Set the class attribute `name`
     # to the string "team"
-    #### YOUR CODE HERE
+    name = 'team'
 
 
     # Define a `names` method
     # that receives no arguments
     # This method should return
     # a list of tuples from an sql execution
-    #### YOUR CODE HERE
+    def names(self):
         
         # Query 5
         # Write an SQL query that selects
         # the team_name and team_id columns
         # from the team table for all teams
         # in the database
-        #### YOUR CODE HERE
+        query_string = f"""
+                    SELECT DISTINCT {self.name}_name
+                                    ,{self.name}_id
+                    FROM {self.name}
+                """
+        
+        list_of_tuples = QueryMixin.query(sql_query=query_string)
+
+        return list_of_tuples
     
 
     # Define a `username` method
     # that receives an ID argument
     # This method should return
     # a list of tuples from an sql execution
-    #### YOUR CODE HERE
+    def username(self, id):
 
         # Query 6
         # Write an SQL query
@@ -39,7 +47,15 @@
         # Use f-string formatting and a WHERE filter
         # to only return the team name related to
         # the ID argument
-        #### YOUR CODE HERE
+        query_string = f"""
+                    SELECT team_name
+                    FROM {self.name}
+                    WHERE {self.name}.{self.name}_id = {id}
+                """
+        
+        list_of_tuples = QueryMixin.query(sql_query=query_string)
+
+        return list_of_tuples
 
 
     # Below is method with an SQL query
@@ -52,15 +68,19 @@
     #### YOUR CODE HERE
     def model_data(self, id):
 
-        return f"""
-            SELECT positive_events, negative_events FROM (
-                    SELECT employee_id
-                         , SUM(positive_events) positive_events
-                         , SUM(negative_events) negative_events
-                    FROM {self.name}
-                    JOIN employee_events
-                        USING({self.name}_id)
-                    WHERE {self.name}.{self.name}_id = {id}
-                    GROUP BY employee_id
-                   )
-                """
+        query_string =  f"""
+                            SELECT positive_events, negative_events FROM (
+                                    SELECT employee_id
+                                        , SUM(positive_events) positive_events
+                                        , SUM(negative_events) negative_events
+                                    FROM {self.name}
+                                    JOIN employee_events
+                                        USING({self.name}_id)
+                                    WHERE {self.name}.{self.name}_id = {id}
+                                    GROUP BY employee_id
+                                )
+                        """
+        
+        df = QueryMixin.pandas_query(sql_query=query_string)
+
+        return df
