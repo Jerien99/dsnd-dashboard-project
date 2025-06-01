@@ -29,7 +29,7 @@ class Employee(QueryBase):
         # This query should return the data
         # for all employees in the database
         query = f"""
-                    SELECT CONCAT(first_name, ' ', last_name) as full_name
+                    SELECT first_name || ' ' || last_name as full_name
                            ,employee_id
                     FROM {self.name}
                 """
@@ -50,7 +50,7 @@ class Employee(QueryBase):
         # to only return the full name of the employee
         # with an id equal to the id argument
         query = f"""
-                    SELECT concat(first_name, ' ', last_name) as full_name
+                    SELECT first_name || ' ' || last_name as full_name
                     FROM {self.name}
                     WHERE employee_id = {id}
                 """
