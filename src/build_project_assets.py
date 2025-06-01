@@ -1,7 +1,9 @@
 import pandas as pd
 from pathlib import Path
 import numpy as np
-import random, pickle, json
+import random
+import pickle
+import json
 from sqlite3 import connect
 from datetime import timedelta, date
 from sklearn.linear_model import LogisticRegression
@@ -10,12 +12,13 @@ from scipy.stats import norm, expon, uniform, skewnorm
 
 cwd = Path('.').resolve()
 
+
 def left_skew(a, loc, size=500):
-    r = skewnorm.rvs(a = a , loc=loc, size=size) 
-    r = r - min(r)     
-    r= r / max(r) 
-    r = r * loc  
-    r = r.astype(int)       
+    r = skewnorm.rvs(a=a, loc=loc, size=size)
+    r = r - min(r)
+    r = r / max(r)
+    r = r * loc
+    r = r.astype(int)
     return random.choice(r)
 
 
@@ -27,7 +30,7 @@ profiles = {
     },
     'normal': {
         'positive': lambda: norm.rvs(loc=norm.rvs(3), scale=1).astype(int),
-        'negative': lambda: norm.rvs(loc=2, scale=np.random.choice([.5, 1,2,3])).astype(int),
+        'negative': lambda: norm.rvs(loc=2, scale=np.random.choice([.5, 1, 2, 3])).astype(int),
         'chance': .15
     },
     'poor': {
@@ -52,7 +55,6 @@ is_recruited = lambda x: np.random.choice([0, 1], p=[1-x, x])
 
 for employee_id in range(1, 26):
 
-
     employee_type = random.choice(list(profiles.keys()))
     event_distribution = profiles[employee_type]
     team_id = random.choice(range(1, 6))
@@ -64,7 +66,7 @@ for employee_id in range(1, 26):
         team_id=team_id,
         recruited=recruited
     )
-    
+
 
 today = date.today()
 last_year = today - timedelta(days=365)
@@ -78,7 +80,7 @@ for day in daterange:
         for employee, config in employees.items():
             config['events'] = config.get('events', {})
             employee_type = config['employee_type']
-            positive = profiles[employee_type]['positive']() 
+            positive = profiles[employee_type]['positive']()
             negative = profiles[employee_type]['negative']()
             data.append([
                 employee,
@@ -88,7 +90,7 @@ for day in daterange:
                 negative,
                 config['recruited'],
                 ]
-                
+
                 )
 
 
@@ -104,7 +106,7 @@ with employees_path.open('r') as file:
     employee = json.load(file)
 
 with managers_path.open('r') as file:
-    managers = json.load(file)   
+    managers = json.load(file)
 
 with shifts_path.open('r') as file:
     shift = json.load(file)
@@ -136,15 +138,15 @@ df['team_name'] = df.team_id.apply(lambda x: team_names[x-1])
 
 
 employee = df.drop_duplicates('employee_id').assign(
-    first_name = lambda x: x.employee_name.str.split().str[0],
-    last_name = lambda x: x.employee_name.str.split().str[1],
+    first_name=lambda x: x.employee_name.str.split().str[0],
+    last_name=lambda x: x.employee_name.str.split().str[1],
 )[['employee_id', 'first_name', 'last_name', 'team_id']]
 
 events = df[['event_date', 'employee_id', 'team_id', 'positive_events', 'negative_events']]
 
 team = df.drop_duplicates('team_id')[['team_id', 'team_name', 'shift', 'manager_name']]
 
-notes = df.dropna()[['employee_id', 'team_id', 'note', 'event_date']].rename(columns={'event_date':'note_date'})
+notes = df.dropna()[['employee_id', 'team_id', 'note', 'event_date']].rename(columns={'event_date': 'note_date'})
 
 model = LogisticRegression(penalty=None)
 
@@ -153,7 +155,7 @@ y = X.join(df.drop_duplicates('employee_id').set_index('employee_id')[['recruite
 
 model.fit(X, y)
 
-X.assign(true=y, pred=model.predict_proba(X)[:,1])
+X.assign(true=y, pred=model.predict_proba(X)[:, 1])
 
 
 model_path = cwd.parent / 'assets' / 'model.pkl'

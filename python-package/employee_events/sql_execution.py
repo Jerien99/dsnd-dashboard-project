@@ -12,14 +12,16 @@ db_path = root / 'employee_events.db'
 # OPTION 1: MIXIN
 # Define a class called `QueryMixin`
 class QueryMixin:
-    
+
     # Define a method named `pandas_query`
     # that receives an sql query as a string
     # and returns the query's result
     # as a pandas dataframe
-    def pandas_query(self, sql_query:str):
 
-        """This function receives an SQL query as a string and returns the data as a pandas DataFrame"""
+    def pandas_query(self, sql_query: str):
+
+        """This function receives an SQL query as a string
+        and returns the data as a pandas DataFrame"""
 
         # Establish SQLite Database connection
         con = connect(db_path)
@@ -32,16 +34,17 @@ class QueryMixin:
 
         # Return the dataframe
         return df
-    
 
     # Define a method named `query`
     # that receives an sql_query as a string
     # and returns the query's result as
     # a list of tuples. (You will need
     # to use an sqlite3 cursor)
-    def query(self, sql_query:str):
 
-        """This function receives an SQL query as a string and returns the data as a list of tuples."""
+    def query(self, sql_query: str):
+
+        """This function receives an SQL query as a string
+        and returns the data as a list of tuples."""
 
         # Establish SQLite Database connection
         con = connect(db_path)
@@ -53,12 +56,12 @@ class QueryMixin:
         # Close the connection
         con.close()
 
-        # Return the result as a list of tuples (which the fetchall method does automatically)
+        # Return the result as a list of tuples
         return res
-    
 
- 
- # Leave this code unchanged
+# Leave this code unchanged
+
+
 def query(func):
     """
     Decorator that runs a standard sql execution
@@ -73,5 +76,5 @@ def query(func):
         result = cursor.execute(query_string).fetchall()
         connection.close()
         return result
-    
+
     return run_query
