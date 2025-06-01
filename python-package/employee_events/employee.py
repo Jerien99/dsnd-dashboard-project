@@ -3,11 +3,11 @@ from .query_base import QueryBase
 
 # Import dependencies needed for sql execution
 # from the `sql_execution` module
-from .sql_execution import QueryMixin
+import pandas as pd
 
 # Define a subclass of QueryBase
 # called Employee
-class Employee(QueryMixin, QueryBase):
+class Employee(QueryBase):
 
     # Set the class attribute `name`
     # to the string "employee"
@@ -18,7 +18,7 @@ class Employee(QueryMixin, QueryBase):
     # that receives no arguments
     # This method should return a list of tuples
     # from an sql execution
-    def names():
+    def names(self):
         
         # Query 3
         # Write an SQL query
@@ -27,15 +27,13 @@ class Employee(QueryMixin, QueryBase):
         # 2. The employee's id
         # This query should return the data
         # for all employees in the database
-        query_string = f"""
-                    SELECT DISTINCT concat(first_name, ' ', last_name) as full_name
-                                    ,employee_id
-                    FROM employee
+        query = f"""
+                    SELECT CONCAT(first_name, ' ', last_name) as full_name
+                           ,employee_id
+                    FROM {self.name}
                 """
         
-        list_of_tuples = QueryMixin.query(sql_query=query_string)
-
-        return list_of_tuples
+        return self.query(query)
     
 
     # Define a method called `username`
@@ -50,15 +48,13 @@ class Employee(QueryMixin, QueryBase):
         # Use f-string formatting and a WHERE filter
         # to only return the full name of the employee
         # with an id equal to the id argument
-        query_string = f"""
+        query = f"""
                     SELECT concat(first_name, ' ', last_name) as full_name
                     FROM {self.name}
-                    WHERE {self.name}.{self.name}_id = {id}
+                    WHERE employee_id = {id}
                 """
         
-        list_of_tuples = QueryMixin.query(sql_query=query_string)
-
-        return list_of_tuples
+        return self.query(query)
 
 
     # Below is method with an SQL query
@@ -70,7 +66,7 @@ class Employee(QueryMixin, QueryBase):
     # the sql query
     def model_data(self, id):
 
-        query_string =  f"""
+        query =  f"""
                             SELECT SUM(positive_events) positive_events
                                 , SUM(negative_events) negative_events
                             FROM {self.name}
@@ -79,7 +75,7 @@ class Employee(QueryMixin, QueryBase):
                             WHERE {self.name}.{self.name}_id = {id}
                         """
         
-        df = QueryMixin.pandas_query(sql_query=query_string)
+        df = self.pandas_query(query)
 
         return df
     

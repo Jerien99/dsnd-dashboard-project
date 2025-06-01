@@ -13,7 +13,7 @@ class QueryBase(QueryMixin):
 
     # Define a `names` method that receives
     # no passed arguments
-    def names():
+    def names(self):
         
         # Return an empty list
         return []
@@ -44,7 +44,7 @@ class QueryBase(QueryMixin):
                     ORDER BY event_date
                 """
         
-        df = QueryMixin.pandas_query(sql_query=query)
+        df = self.pandas_query(sql_query=query)
 
         return df
             
@@ -71,7 +71,7 @@ class QueryBase(QueryMixin):
                     ORDER BY note_date
                 """
         
-        df = QueryMixin.pandas_query(sql_query=query)
+        df = self.pandas_query(sql_query=query)
 
         return df
 

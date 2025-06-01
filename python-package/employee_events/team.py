@@ -2,11 +2,11 @@
 from .query_base import QueryBase
 
 # Import dependencies for sql execution
-from .sql_execution import QueryMixin
+import pandas as pd
 
 # Create a subclass of QueryBase
 # called  `Team`
-class Team(QueryMixin, QueryBase):
+class Team(QueryBase):
 
     # Set the class attribute `name`
     # to the string "team"
@@ -24,15 +24,13 @@ class Team(QueryMixin, QueryBase):
         # the team_name and team_id columns
         # from the team table for all teams
         # in the database
-        query_string = f"""
+        query = f"""
                     SELECT DISTINCT {self.name}_name
                                     ,{self.name}_id
                     FROM {self.name}
                 """
         
-        list_of_tuples = QueryMixin.query(sql_query=query_string)
-
-        return list_of_tuples
+        return self.query(query)
     
 
     # Define a `username` method
@@ -47,15 +45,13 @@ class Team(QueryMixin, QueryBase):
         # Use f-string formatting and a WHERE filter
         # to only return the team name related to
         # the ID argument
-        query_string = f"""
+        query = f"""
                     SELECT team_name
                     FROM {self.name}
                     WHERE {self.name}.{self.name}_id = {id}
                 """
         
-        list_of_tuples = QueryMixin.query(sql_query=query_string)
-
-        return list_of_tuples
+        return self.query(query)
 
 
     # Below is method with an SQL query
@@ -65,10 +61,9 @@ class Team(QueryMixin, QueryBase):
     # so when it is called, a pandas dataframe
     # is returns containing the execution of
     # the sql query
-    #### YOUR CODE HERE
     def model_data(self, id):
 
-        query_string =  f"""
+        query =  f"""
                             SELECT positive_events, negative_events FROM (
                                     SELECT employee_id
                                         , SUM(positive_events) positive_events
@@ -81,6 +76,4 @@ class Team(QueryMixin, QueryBase):
                                 )
                         """
         
-        df = QueryMixin.pandas_query(sql_query=query_string)
-
-        return df
+        return self.pandas_query(query)
