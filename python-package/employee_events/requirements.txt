@@ -1,1 +1,4 @@
 pandas==2.2.3
+setuptools==80.0.9
+pathlib==1.0.1
+db-sqlite3==0.0.1
